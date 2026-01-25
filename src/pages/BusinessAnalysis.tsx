@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ModelConfig } from '../types';
+import { ModelConfig } from '../../types';
 import { getAIResponse } from '../services/aiService';
 import { marked } from 'marked';
 import { 

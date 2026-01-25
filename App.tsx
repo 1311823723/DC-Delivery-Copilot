@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import FaultDiagnosis from './components/FaultDiagnosis';
-import BusinessAnalysis from './components/BusinessAnalysis';
-import KnowledgeBase from './components/KnowledgeBase';
-import NewcomerGuide from './components/NewcomerGuide';
+import Sidebar from './src/components/Layout/Sidebar';
+import FaultDiagnosis from './src/pages/FaultDiagnosis';
+import BusinessAnalysis from './src/pages/BusinessAnalysis';
+import KnowledgeBase from './src/pages/KnowledgeBase';
+import NewcomerGuide from './src/pages/NewcomerGuide';
 import { AppTab, ModelConfig } from './types';
-import { AI_CONFIG } from './services/aiService';
+import { AI_CONFIG } from './src/services/aiService';
 import { HelpCircle, Bell, User } from 'lucide-react';
 
 const App: React.FC = () => {

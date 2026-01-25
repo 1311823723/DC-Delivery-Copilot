@@ -1,6 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { ModelConfig, KnowledgeItem } from "../types";
+import { ModelConfig, KnowledgeItem } from "../../types";
 
 // 全局知识库缓存（模拟向量数据库）
 let globalKnowledgeBase: KnowledgeItem[] = [];

@@ -12,7 +12,7 @@ import {
   AlertCircle,
   RotateCcw
 } from 'lucide-react';
-import { KnowledgeItem } from '../types';
+import { KnowledgeItem } from '../../types';
 
 // 将默认数据提取为常量，仅在本地存储为空时使用
 const DEFAULT_DOCUMENTS: KnowledgeItem[] = [

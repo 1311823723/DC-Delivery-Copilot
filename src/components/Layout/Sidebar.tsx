@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AppTab, ModelConfig } from '../types';
+import { AppTab, ModelConfig } from '../../../types';
 import { 
   Activity, 
   ShieldCheck, 
