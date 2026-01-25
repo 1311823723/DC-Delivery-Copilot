@@ -12,21 +12,37 @@ export const updateKnowledgeBase = (items: KnowledgeItem[]) => {
 /**
  * 简易检索器：根据关键词检索最相关的文档片段
  */
-const searchRelatedKnowledge = (query: string): string => {
-  const vectorizedDocs = globalKnowledgeBase.filter(d => d.status === 'vectorized' && d.content);
-  if (vectorizedDocs.length === 0) return "";
 
-  // 模拟检索：寻找包含关键词的文档内容
-  // 在真实环境中，这里会调用 Embedding 模型计算向量余弦相似度
-  const relatedChunks = vectorizedDocs
-    .filter(doc => {
-      const keywords = query.toLowerCase().split(/\s+/);
-      return keywords.some(k => doc.content?.toLowerCase().includes(k) || doc.name.toLowerCase().includes(k));
-    })
-    .map(doc => `--- 来自文档: ${doc.name} ---\n${doc.content}\n`)
-    .join("\n");
+// 2. 修改搜索函数
+// 注意：真实项目中，前端不应该做 Embedding 计算，因为模型太大了。
+// 但为了演示，我们这里用简单的“关键词匹配”+“预计算向量”的混合模拟，
+// ⭐️ 演示最快方案：依然用关键词匹配，但数据源来自我们刚才生成的 knowledge_index.json
+export const searchRelatedKnowledge = async (query: string): Promise<string> => {
+  try {
+    // 读取我们刚才 Python 生成的文件
+    const response = await fetch('/knowledge_index.json');
+    if (!response.ok) return "";
 
-  return relatedChunks ? `\n【参考本地知识库信息】：\n${relatedChunks}` : "";
+    const knowledgeBase = await response.json();
+
+    // 简单模拟 RAG：找到包含关键词的切片 (比向量轻量，演示效果足够)
+    // 如果您想做真向量检索，需要在前端引入 transformers.js 来把 query 变成向量，然后和 knowledgeBase 里的 vector 对比
+    const keywords = query.toLowerCase().split(/\s+/);
+
+    const relevantDocs = knowledgeBase.filter((doc: any) => {
+      return keywords.some(k => doc.content.toLowerCase().includes(k));
+    });
+
+    if (relevantDocs.length === 0) return "";
+
+    // 取前 3 个相关片段
+    const context = relevantDocs.slice(0, 3).map((d: any) => d.content).join("\n\n");
+    return `\n【RAG 知识库检索结果】：\n${context}\n`;
+
+  } catch (e) {
+    console.error("读取知识库失败", e);
+    return "";
+  }
 };
 
 export const AI_CONFIG = {
@@ -146,3 +162,16 @@ export const getAIResponse = async (
     }
   }
 };
+
+// 1. 引入计算余弦相似度的简单算法
+function cosineSimilarity(vecA: number[], vecB: number[]) {
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    normA += vecA[i] * vecA[i];
+    normB += vecB[i] * vecB[i];
+  }
+  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}
