@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神码智核</title>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f3f7fa;
+            color: #1e293b;
+        }
+
+        /* 强制 Markdown 渲染样式，解决只显示 ### 的问题 */
+        .prose h1, .markdown-body h1 { font-size: 2.25rem !important; font-weight: 900 !important; margin-bottom: 1.5rem !important; margin-top: 1rem !important; display: block !important; }
+        .prose h2, .markdown-body h2 { font-size: 1.75rem !important; font-weight: 800 !important; margin-top: 2rem !important; margin-bottom: 1.25rem !important; display: block !important; }
+        .prose h3, .markdown-body h3 { font-size: 1.35rem !important; font-weight: 700 !important; margin-top: 1.5rem !important; margin-bottom: 0.75rem !important; display: block !important; }
+        
+        /* 浅色模式 Markdown 标题颜色 */
+        .prose h1, .markdown-body h1 { color: #1e3a8a !important; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        .prose h2, .markdown-body h2 { color: #2563eb !important; }
+        .prose h3, .markdown-body h3 { color: #334155 !important; }
+
+        /* 深色模式 Markdown 标题颜色 (针对右侧报告区) */
+        .prose-invert h1 { color: #ffffff !important; border-bottom: 1px solid #334155 !important; }
+        .prose-invert h2 { color: #60a5fa !important; }
+        .prose-invert h3 { color: #94a3b8 !important; }
+        .prose-invert p { color: #cbd5e1 !important; line-height: 1.8 !important; margin-bottom: 1.25rem !important; }
+        .prose-invert strong { color: #ffffff !important; font-weight: 800 !important; }
+        
+        /* 列表样式补全 */
+        .markdown-body ul, .prose ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin: 1rem 0 !important; }
+        .markdown-body li, .prose li { margin-bottom: 0.5rem !important; }
+
+        /* 代码块优化 */
+        pre { background-color: #020617 !important; border: 1px solid #1e293b !important; padding: 1.25rem !important; border-radius: 1rem !important; margin: 1.5rem 0 !important; }
+        code { font-family: 'JetBrains Mono', monospace !important; font-size: 0.85em !important; background-color: #1e293b !important; padding: 0.2rem 0.5rem !important; border-radius: 0.4rem !important; color: #93c5fd !important; }
+
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "marked": "https://esm.sh/marked@^15.0.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="overflow-hidden">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
