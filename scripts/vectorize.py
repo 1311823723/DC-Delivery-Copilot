@@ -5,8 +5,8 @@ import fitz  # PyMuPDF
 import docx2txt
 from rapidocr_onnxruntime import RapidOCR
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
 # === 配置区域 ===
 # 文档存放目录
 DOCS_DIR = "../documents"
