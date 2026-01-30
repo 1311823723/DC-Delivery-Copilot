@@ -3,11 +3,9 @@ import time
 import json
 import os
 import requests
-import re  # 引入正则，用于分词
+import re
 
-# ==========================================
-# 1. 页面基础配置
-# ==========================================
+# 页面基础配置
 st.set_page_config(
     page_title="神码智核 - 核心交付底座",
     page_icon="🚀",
@@ -15,9 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ==========================================
-# 2. CSS 魔法 (保持不变，用于美化)
-# ==========================================
+# CSS样式
 st.markdown("""
 <style>
     .stApp { background-color: #f3f7fa; font-family: 'Inter', sans-serif; }
@@ -50,11 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ==========================================
-# 3. 后端逻辑区 (已修复 RAG 和 模型)
-# ==========================================
-
-# 加载知识库
+# 后端逻辑区
 @st.cache_data
 def load_knowledge_base():
     path = os.path.join("public", "knowledge_index.json")
@@ -67,13 +59,9 @@ def load_knowledge_base():
 knowledge_base = load_knowledge_base()
 
 
-# ✨ 修复 2：升级版检索逻辑 (关键词分词匹配)
+# RAG检索逻辑
 def search_knowledge(query, top_k=3):
     if not knowledge_base: return []
-
-    # 1. 把用户问题切成词 (比如 "网关报错" -> "网关", "报错")
-    # 简单按空格或中文分词逻辑（这里简单处理，把问题按字或者空格切分）
-    # 为了演示效果，我们直接判断 query 里的关键词是否出现在文档里
 
     scored_results = []
 
@@ -81,17 +69,16 @@ def search_knowledge(query, top_k=3):
         content = item["content"]
         score = 0
 
-        # 简单算法：用户输入的每个字/词，如果在文档里出现，就加分
-        # 比如搜 "网关超时"，文档里有 "网关" +1分，有 "超时" +1分
+        # 基于关键词匹配的评分算法
         if query in content:
-            score += 10  # 这种是完全匹配，分最高
+            score += 10  # 完全匹配得分最高
         else:
-            # 简单的字面重叠率计算
+            # 字面重叠率计算
             for char in query:
                 if char in content:
                     score += 0.5
 
-        if score > 1:  # 只有一点相关性的才要
+        if score > 1:  # 只保留有一定相关性的结果
             scored_results.append((score, item))
 
     # 按分数从高到低排序
@@ -101,7 +88,7 @@ def search_knowledge(query, top_k=3):
     return [x[1] for x in scored_results[:top_k]]
 
 
-# Ollama 调用
+# Ollama调用
 def call_ollama_stream(model, messages):
     url = "http://localhost:11434/api/chat"
     payload = {"model": model, "messages": messages, "stream": True}
@@ -119,16 +106,13 @@ def call_ollama_stream(model, messages):
         yield "❌ 请确认本地 Ollama 已运行 `ollama serve`"
 
 
-# ==========================================
-# 4. 侧边栏导航
-# ==========================================
+# 侧边栏导航
 with st.sidebar:
-    # ✨ 修复 1：只加载本地图片，如果不存就什么都不显示，不再显示奇怪的 URL 图片
+    # 加载本地Logo图片
     logo_path = "public/logo.png"
     if os.path.exists(logo_path):
         st.image(logo_path, width=60)
     else:
-        # 如果没图，就显示一个文字 Logo 代替
         st.markdown("### 🚀 神码智核")
 
     st.caption("核心交付部 · 效能底座")
@@ -142,19 +126,18 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ✨ 修复 3：在列表里加上你的 qwen3-vl:8b
+    # 模型选择
     st.markdown("#### ⚙️ 模型配置")
     selected_model = st.selectbox(
         "推理引擎",
-        ["qwen3-vl:8b", "deepseek-r1", "llama3", "qwen2.5"],  # <--- 这里加进去了！
+        ["qwen3-vl:8b", "deepseek-r1", "llama3", "qwen2.5"],
         index=0
     )
 
     st.info(f"🟢 系统在线\n\n已加载 {len(knowledge_base)} 个知识切片")
 
-# ==========================================
-# 5. Header 和 主界面
-# ==========================================
+
+# Header 和 主界面
 page_titles = {"🎓 码哥小助手": "Newcomer Guide", "🩺 智能故障诊断": "Fault Diagnosis",
                "📊 业务差异分析": "Business Analysis", "📚 知识库管理": "Knowledge Base"}
 current_en_title = page_titles.get(nav, "Dashboard")
@@ -212,7 +195,7 @@ if nav == "🎓 码哥小助手":
                         f"【参考文档】：\n{context}\n\n"
                         f"用户问题：{prompt}"
                     )
-                    st.toast(f"已检索到 {len(docs)} 条相关文档", icon="📚")  # 提示一下用户检索成功
+                    st.toast(f"已检索到 {len(docs)} 条相关文档", icon="📚")
                 else:
                     sys_prompt = f"你是一个友好的技术导师。用户问：{prompt}。本地知识库没找到相关内容，请用你的通用知识回答，但要提示用户去更新文档。"
 
