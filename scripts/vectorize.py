@@ -30,7 +30,8 @@ def extract_pdf_content(pdf_path):
 
     for i, page in enumerate(doc):
         # 1. 提取页面原生文本
-        text = page.get_text()
+        filename = os.path.basename(pdf_path)
+        text = f"【来源文档：{filename}】\n" + page.get_text()
         full_text += text + "\n"
 
         # 2. 提取页面内的图片并进行 OCR
