@@ -143,6 +143,44 @@ def call_ollama_stream(model, messages):
 
 
 # ==========================================
+# 新增：真实日志文件检索逻辑
+# ==========================================
+def search_local_logs(trace_id):
+    """
+    遍历 logs 文件夹下的所有 .log 文件，寻找包含 trace_id 的日志行
+    """
+    log_dir = "logs"
+    if not os.path.exists(log_dir):
+        return f"⚠️ 未找到日志目录: {log_dir}，请先创建并放入日志文件。"
+
+    found_content = []
+
+    # 遍历 logs 目录
+    for filename in os.listdir(log_dir):
+        if filename.endswith(".log"):
+            file_path = os.path.join(log_dir, filename)
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    # 简单粗暴：按行读取，找到匹配 TraceID 的行
+                    # 进阶技巧：这里其实可以做上下文窗口截取（前5行+后5行），为了演示简单我们只取匹配行
+                    file_hits = []
+                    for line in f:
+                        if trace_id in line:
+                            file_hits.append(line.strip())
+
+                    if file_hits:
+                        found_content.append(f"--- [来源文件: {filename}] ---")
+                        found_content.extend(file_hits)
+                        found_content.append("")  # 空行分隔
+            except Exception as e:
+                return f"❌ 读取文件 {filename} 失败: {str(e)}"
+
+    if not found_content:
+        return None
+
+    return "\n".join(found_content)
+
+# ==========================================
 # 4. 侧边栏布局 (Sidebar)
 # ==========================================
 with st.sidebar:
@@ -261,11 +299,11 @@ if nav == "🎓 码哥小助手":
         st.session_state.chat_history.append({"role": "assistant", "content": full_res})
 
 # ----------------------------------------------------
-# 功能 2: 智能故障诊断 (MCP / Agent)
+# 功能 2: 智能故障诊断 (MCP / Agent) - 真实文件版
 # ----------------------------------------------------
 elif nav == "🩺 智能故障诊断":
     st.markdown("### 🩺 全链路故障根因分析")
-    st.caption("Agentic Workflow: 自动执行 [拉取 -> 分析 -> 归档] 流程")
+    st.caption("Agentic Workflow: 自动连接日志中心 -> 聚合分布式日志 -> 智能定位根因")
 
     col1, col2 = st.columns([1, 1], gap="large")
 
@@ -276,24 +314,33 @@ elif nav == "🩺 智能故障诊断":
 
         log_content = ""
         with tab1:
-            st.info("💡 演示流水号: `SEQ-20260130-001`")
-            serial = st.text_input("Transaction ID", value="SEQ-20260130-001")
+            # 提示用户输入日志里的真实 TraceID
+            st.info("💡 演示提示：\n- 成功交易: `G889820260131001`\n- 失败报错: `G889820260131003` (金额超限)")
 
-            if st.button("📡 连接 ESB 总线拉取"):
-                with st.status("正在追踪分布式链路...", expanded=True) as status:
-                    time.sleep(0.5)
-                    st.write("🔄 连接日志中心 (LogCenter)...")
-                    time.sleep(0.5)
-                    st.write("🔍 检索 TraceID: 7f8a9b2c...")
+            # 默认填一个报错的 ID 方便演示
+            serial = st.text_input("Global Trace ID", value="G889820260131003")
 
-                    if serial in MOCK_LOG_DATABASE:
-                        st.session_state.log_cache = MOCK_LOG_DATABASE[serial]
-                        status.update(label="✅ 拉取成功", state="complete", expanded=False)
+            if st.button("📡 全链路日志聚合"):
+                with st.status("正在执行分布式链路追踪...", expanded=True) as status:
+                    time.sleep(0.5)
+                    st.write(f"🔍 扫描 `/logs` 目录下的微服务日志...")
+                    time.sleep(0.5)
+                    st.write(f"🔗 聚合 TraceID: {serial} 的上下文...")
+
+                    # === 调用真实文件搜索 ===
+                    result = search_local_logs(serial)
+
+                    if result:
+                        st.session_state.log_cache = result
+                        status.update(label="✅ 聚合成功", state="complete", expanded=False)
+                        st.toast(f"已从 {result.count('来源文件')} 个服务中提取日志", icon="📄")
                     else:
                         status.update(label="❌ 未找到日志", state="error")
+                        st.error(f"在 logs 目录下未找到包含 {serial} 的日志")
 
             if "log_cache" in st.session_state:
                 log_content = st.session_state.log_cache
+                # 显示日志来源，显得很专业
                 st.code(log_content, language="log")
 
         with tab2:
@@ -314,23 +361,38 @@ elif nav == "🩺 智能故障诊断":
 
         if analyze_btn and log_content:
             report_ph = st.empty()
+
+            # === Prompt 升级：让 AI 扮演全链路专家 ===
             prompt = f"""
-            你是一个Java架构师。分析此日志：
-            ```
+            你是一个金融级分布式系统架构师。请分析以下聚合的跨系统日志（包含多个微服务节点）：
+            ```log
             {log_content}
             ```
-            请务必输出 Markdown 表格：| 错误类型 | 定位组件 | 根因 | 建议 |
+
+            请输出一份Markdown格式的**故障诊断报告**，必须包含以下章节：
+
+            1. **🔗 链路拓扑还原**: 
+               - 描述请求经过了哪些服务（根据日志文件名和内容推断）。
+               - 比如：LoanService -> DepositService。
+
+            2. **🔴 故障根因锁**: 
+               - 指出具体报错的日志行。
+               - 用通俗语言解释错误原因（例如：余额不足、网络超时、参数校验失败）。
+
+            3. **🛠 修复/处理建议**:
+               - 针对该错误给出具体的操作建议（如：检查数据库字段、通知客户、重启服务等）。
+
+            请保持专业、客观，重点突出错误信息。
             """
 
             full_text = ""
             for chunk in call_ollama_stream(selected_model, [{"role": "user", "content": prompt}]):
                 full_text += chunk
-                # Hack: 模拟在控制台里打印
                 report_ph.markdown(f'<div style="background:#0f172a; color:#e2e8f0;">{full_text}</div>',
                                    unsafe_allow_html=True)
         else:
             st.markdown(
-                '<div style="color:#64748b; text-align:center; padding-top:100px;">Waiting for input stream...</div>',
+                '<div style="color:#64748b; text-align:center; padding-top:100px;">Waiting for trace stream...</div>',
                 unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
