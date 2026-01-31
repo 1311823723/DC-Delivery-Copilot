@@ -149,21 +149,36 @@ def search_knowledge(query, top_k=3):
 
 
 # Ollama 调用逻辑 (流式)
+# ==========================================
+# 优化版：Ollama 调用 (带健康检查 & 思考标签清洗)
+# ==========================================
 def call_ollama_stream(model, messages):
     url = "http://localhost:11434/api/chat"
-    payload = {"model": model, "messages": messages, "stream": True}
+
+    # 1. 先做个极速健康检查
     try:
-        with requests.post(url, json=payload, stream=True) as response:
+        requests.get("http://localhost:11434", timeout=1)
+    except:
+        yield "❌ 连接失败: 本地 Ollama 服务未启动！请在终端运行 `ollama serve`"
+        return
+
+    payload = {"model": model, "messages": messages, "stream": True}
+
+    try:
+        # 设置 timeout 防止握手等待太久
+        with requests.post(url, json=payload, stream=True, timeout=10) as response:
             if response.status_code == 200:
                 for line in response.iter_lines():
                     if line:
                         body = json.loads(line)
                         if "message" in body:
-                            yield body["message"]["content"]
+                            content = body["message"]["content"]
+                            # 稍微清洗一下 DeepSeek 的思考标签，或者直接返回让前端渲染
+                            yield content
             else:
-                yield f"❌ Error: {response.status_code} - Ollama 服务未响应"
-    except:
-        yield "❌ 连接失败: 请确认本地 Ollama 已运行 `ollama serve`"
+                yield f"❌ 模型服务报错: {response.status_code} (请检查模型名称是否正确)"
+    except Exception as e:
+        yield f"❌ 推理中断: {str(e)}"
 
 
 # ==========================================
@@ -231,7 +246,7 @@ with st.sidebar:
     st.markdown("#### ⚙️ 引擎配置")
     selected_model = st.selectbox(
         "推理模型",
-        ["qwen3-vl:8b", "deepseek-r1", "qwen2.5", "llama3"],
+        ["qwen3-vl:8b", "deepseek-r1:8b", "qwen2.5", "llama3"],
         index=0
     )
     st.info(f"🟢 系统在线\n\n已加载 {len(knowledge_base)} 个知识切片")
@@ -325,6 +340,9 @@ if nav == "🎓 码哥小助手":
 # ----------------------------------------------------
 # 功能 2: 智能故障诊断 (MCP / Agent) - 真实文件版
 # ----------------------------------------------------
+# ----------------------------------------------------
+# 功能 2: 智能故障诊断 (性能优化版)
+# ----------------------------------------------------
 elif nav == "🩺 智能故障诊断":
     st.markdown("### 🩺 全链路故障根因分析")
     st.caption("Agentic Workflow: 自动连接日志中心 -> 聚合分布式日志 -> 智能定位根因")
@@ -338,39 +356,39 @@ elif nav == "🩺 智能故障诊断":
 
         log_content = ""
         with tab1:
-            # 提示用户输入日志里的真实 TraceID
             st.info("💡 演示提示：\n- 成功交易: `G889820260131001`\n- 失败报错: `G889820260131003` (金额超限)")
-
-            # 默认填一个报错的 ID 方便演示
             serial = st.text_input("Global Trace ID", value="G889820260131003")
 
             if st.button("📡 全链路日志聚合"):
                 with st.status("正在执行分布式链路追踪...", expanded=True) as status:
-                    time.sleep(0.5)
+                    time.sleep(0.3)
                     st.write(f"🔍 扫描 `/logs` 目录下的微服务日志...")
-                    time.sleep(0.5)
-                    st.write(f"🔗 聚合 TraceID: {serial} 的上下文...")
-
-                    # === 调用真实文件搜索 ===
+                    # 这里调用之前的 search_local_logs 函数
                     result = search_local_logs(serial)
 
                     if result:
                         st.session_state.log_cache = result
                         status.update(label="✅ 聚合成功", state="complete", expanded=False)
-                        st.toast(f"已从 {result.count('来源文件')} 个服务中提取日志", icon="📄")
+                        st.toast(f"已提取上下文日志", icon="📄")
                     else:
                         status.update(label="❌ 未找到日志", state="error")
-                        st.error(f"在 logs 目录下未找到包含 {serial} 的日志")
+                        st.error(f"未找到包含 {serial} 的日志")
 
             if "log_cache" in st.session_state:
                 log_content = st.session_state.log_cache
-                # 显示日志来源，显得很专业
                 st.code(log_content, language="log")
 
         with tab2:
             log_content = st.text_area("粘贴堆栈信息", height=200)
 
-        analyze_btn = st.button("⚡ 启动智能根因分析", type="primary", use_container_width=True)
+        # 增加一个清空按钮，防止状态卡死
+        c_btn1, c_btn2 = st.columns([3, 1])
+        with c_btn1:
+            analyze_btn = st.button("⚡ 启动智能根因分析", type="primary", use_container_width=True)
+        with c_btn2:
+            if st.button("🔄 重置"):
+                st.rerun()
+
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
@@ -384,37 +402,47 @@ elif nav == "🩺 智能故障诊断":
         """, unsafe_allow_html=True)
 
         if analyze_btn and log_content:
+            # 1. 状态指示器 (关键优化！让用户知道没死机)
+            status_indicator = st.status("🤖 AI 正在深度推理 (Chain-of-Thought)...", expanded=True)
             report_ph = st.empty()
 
-            # === Prompt 升级：让 AI 扮演全链路专家 ===
             prompt = f"""
-            你是一个金融级分布式系统架构师。请分析以下聚合的跨系统日志（包含多个微服务节点）：
+            你是一个金融级分布式系统架构师。请分析以下聚合的跨系统日志：
             ```log
             {log_content}
             ```
-
-            请输出一份Markdown格式的**故障诊断报告**，必须包含以下章节：
-
-            1. **🔗 链路拓扑还原**: 
-               - 描述请求经过了哪些服务（根据日志文件名和内容推断）。
-               - 比如：LoanService -> DepositService。
-
-            2. **🔴 故障根因锁**: 
-               - 指出具体报错的日志行。
-               - 用通俗语言解释错误原因（例如：余额不足、网络超时、参数校验失败）。
-
-            3. **🛠 修复/处理建议**:
-               - 针对该错误给出具体的操作建议（如：检查数据库字段、通知客户、重启服务等）。
-
-            请保持专业、客观，重点突出错误信息。
+            请输出 Markdown 格式的诊断报告，包含：1.链路拓扑 2.根因分析 3.修复建议。
+            请保持专业、客观。
             """
 
             full_text = ""
+            start_time = time.time()
+
+            # 流式接收
             for chunk in call_ollama_stream(selected_model, [{"role": "user", "content": prompt}]):
                 full_text += chunk
-                report_ph.markdown(f'<div style="background:#0f172a; color:#e2e8f0;">{full_text}</div>',
-                                   unsafe_allow_html=True)
-        else:
+
+                # 2. 实时检测 DeepSeek 的思考标签 <think>
+                if "<think>" in full_text and "</think>" not in full_text:
+                    # 正在思考中，更新状态栏而不是主报告区
+                    think_content = full_text.split("<think>")[-1]
+                    status_indicator.write(think_content[-100:])  # 只显示最新思考，防止刷屏
+                elif "</think>" in full_text:
+                    # 思考结束，开始输出正文
+                    status_indicator.update(label="✅ 推理完成", state="complete", expanded=False)
+                    # 去掉思考标签，只显示正文 (可选)
+                    clean_text = re.sub(r'<think>.*?</think>', '', full_text, flags=re.DOTALL)
+                    report_ph.markdown(f'<div style="background:#0f172a; color:#e2e8f0;">{clean_text}</div>',
+                                       unsafe_allow_html=True)
+                else:
+                    # 普通模型（非 R1）直接显示
+                    report_ph.markdown(f'<div style="background:#0f172a; color:#e2e8f0;">{full_text}</div>',
+                                       unsafe_allow_html=True)
+
+            # 最终兜底刷新
+            status_indicator.update(label="✅ 分析完成", state="complete", expanded=False)
+
+        elif not analyze_btn:
             st.markdown(
                 '<div style="color:#64748b; text-align:center; padding-top:100px;">Waiting for trace stream...</div>',
                 unsafe_allow_html=True)
