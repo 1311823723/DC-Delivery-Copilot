@@ -1,3 +1,70 @@
+2026-01-31 09:59:55.005 [INFO ] [G886820260131000] [T886820260131000] o.s.s.s.TaskUtils$LoggingErrorHandler - 任务调度器心跳检查正常...
+2026-01-31 09:59:58.200 [INFO ] [G886820260131000] [T886820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+2026-01-31 10:00:00.280 [INFO ] [G889820260131101] [T886820260131002] c.f.d.c.DepositController - 接收核心入账请求: FromSys[8898], AcctNo[62220001]
+2026-01-31 10:00:00.290 [INFO ] [G889820260131102] [T886820260131003] c.f.d.c.DepositController - 接收核心入账请求: FromSys[8898], AcctNo[62220002]
+2026-01-31 10:00:00.320 [INFO ] [G889820260131101] [T886820260131002] c.f.d.s.AccountService - [ZhangSan] 账户状态校验: 正常. CurrentBalance[1020.50]
+2026-01-31 10:00:00.330 [INFO ] [G889820260131102] [T886820260131003] c.f.d.s.AccountService - [WangWu] 账户状态校验: 正常. CurrentBalance[0.00]
+2026-01-31 10:00:00.550 [INFO ] [G889820260131101] [T886820260131002] c.f.d.s.AccountService - [ZhangSan] 账务变动完成: Credit[50000.00], NewBalance[51020.50], Seq[DEP20260131999]
+2026-01-31 10:00:00.560 [INFO ] [G889820260131102] [T886820260131003] c.f.d.s.AccountService - [WangWu] 账务变动完成: Credit[10000.00], NewBalance[10000.00], Seq[DEP20260131998]
+2026-01-31 10:00:00.580 [INFO ] [G889820260131101] [T886820260131002] c.f.d.c.DepositController - [ZhangSan] 响应成功报文给上游
+2026-01-31 10:00:00.590 [INFO ] [G889820260131102] [T886820260131003] c.f.d.c.DepositController - [WangWu] 响应成功报文给上游
+2026-01-31 10:01:00.000 [INFO ] [G886820260131000] [T886820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+2026-01-31 10:02:15.150 [INFO ] [G889820260131104] [T886820260131004] c.f.d.c.DepositController - 接收核心入账请求: FromSys[8898], AcctNo[62220004]
+2026-01-31 10:02:15.200 [INFO ] [G889820260131104] [T886820260131004] c.f.d.s.AccountService - [SunQi] 账户状态校验: 正常
+2026-01-31 10:02:15.350 [INFO ] [G889820260131104] [T886820260131004] c.f.d.s.AccountService - [SunQi] 账务变动完成: Credit[3000.00], Seq[DEP20260131997]
+2026-01-31 10:02:15.380 [INFO ] [G889820260131104] [T886820260131004] c.f.d.c.DepositController - [SunQi] 响应成功报文给上游
+2026-01-31 10:03:00.000 [INFO ] [G886820260131000] [T886820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+2026-01-31 10:05:30.280 [INFO ] [G889820260131555] [T886820260131088] c.f.d.c.DepositController - 接收核心入账请求: FromSys[8898], AcctNo[62220099]
+2026-01-31 10:05:30.350 [INFO ] [G889820260131555] [T886820260131088] c.f.d.s.RiskControlService - [LiSi] 触发反洗钱(AML)规则扫描: Amount[2000000.00] > Threshold[500000.00]
+2026-01-31 10:05:30.550 [ERROR] [G889820260131555] [T886820260131088] c.f.d.s.AccountService - 账户入账失败，捕获业务异常
+com.financial.core.exception.AccountFrozenException: 账户涉嫌洗钱风险，已被冻结 [RuleID: AML_9901]
+	at com.financial.deposit.service.RiskControlService.check(RiskControlService.java:108)
+	at com.financial.deposit.service.AccountService.credit(AccountService.java:55)
+	at com.financial.deposit.controller.DepositController.income(DepositController.java:42)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:878)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:660)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:373)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1590)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2026-01-31 10:05:30.580 [ERROR] [G889820260131555] [T886820260131088] c.f.d.c.GlobalExceptionHandler - 统一异常处理: 返回 HTTP 500, Code[ACC_FROZEN]
+2026-01-31 10:05:31.115 [INFO ] [G889820260131105] [T886820260131005] c.f.d.c.DepositController - 接收核心入账请求: FromSys[8898], AcctNo[62220005]
+2026-01-31 10:05:31.120 [INFO ] [G889820260131105] [T886820260131005] c.f.d.s.AccountService - [ZhouBa] 账户状态校验: 正常
+2026-01-31 10:05:31.390 [INFO ] [G889820260131105] [T886820260131005] c.f.d.s.AccountService - [ZhouBa] 账务变动完成: Credit[5000.00], Seq[DEP20260131996]
+2026-01-31 10:05:31.395 [INFO ] [G889820260131105] [T886820260131005] c.f.d.c.DepositController - [ZhouBa] 响应成功报文给上游
+2026-01-31 10:15:00.000 [INFO ] [G886820260131000] [T886820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=20, active=0, idle=20, waiting=0)
+2026-01-31 10:30:00.001 [INFO ] [G886820260131900] [T886820260131900] c.f.d.j.InterestCalculator - 开始执行[日终结息]定时任务...
+2026-01-31 10:30:05.120 [INFO ] [G886820260131900] [T886820260131900] c.f.d.j.InterestCalculator - 批量计算完成: Accounts[10500], TotalInterest[2304.55], Cost[5119ms]
 2026-01-31 10:30:00.105 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.controller.TransferController - [入口] 收到内部转账请求, 来源: LOAN_CENTER
 2026-01-31 10:30:00.110 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.controller.TransferController - [入口] 收到内部转账请求, 来源: LOAN_CENTER
 2026-01-31 10:30:00.115 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.filter.AuthFilter - [鉴权] 验证签名: PASS, 客户端IP: 10.20.1.5

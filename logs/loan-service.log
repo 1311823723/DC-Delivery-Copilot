@@ -1,3 +1,45 @@
+2026-01-31 09:59:55.001 [INFO ] [G889820260131000] [T889820260131000] o.s.s.s.TaskUtils$LoggingErrorHandler - 任务调度器心跳检查正常...
+2026-01-31 09:59:58.200 [INFO ] [G889820260131000] [T889820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+2026-01-31 10:00:00.005 [INFO ] [G889820260131101] [T889820260131001] c.f.l.c.LoanController - 收到放款申请请求: 用户[ZhangSan], 金额[50000.00], 申请单号[APP20260131001]
+2026-01-31 10:00:00.010 [INFO ] [G889820260131102] [T889820260131002] c.f.l.c.LoanController - 收到放款申请请求: 用户[WangWu], 金额[10000.00], 申请单号[APP20260131002]
+2026-01-31 10:00:00.150 [INFO ] [G889820260131101] [T889820260131001] c.f.l.s.RiskClient - [ZhangSan] 风控准入校验通过: Score[95], Level[LOW_RISK]
+2026-01-31 10:00:00.160 [INFO ] [G889820260131102] [T889820260131002] c.f.l.s.RiskClient - [WangWu] 风控准入校验通过: Score[88], Level[LOW_RISK]
+2026-01-31 10:00:00.210 [INFO ] [G889820260131101] [T889820260131001] c.f.l.s.LoanCoreService - [ZhangSan] 借据创建成功: 借据号[DB2026013100088], 状态[INIT]
+2026-01-31 10:00:00.215 [INFO ] [G889820260131101] [T889820260131001] c.f.l.i.DepositFeignClient - [ZhangSan] 开始调用存款服务进行入账: AcctNo[62220001], Amount[50000.00]
+2026-01-31 10:00:00.220 [INFO ] [G889820260131102] [T889820260131002] c.f.l.s.LoanCoreService - [WangWu] 借据创建成功: 借据号[DB2026013100089], 状态[INIT]
+2026-01-31 10:00:00.225 [INFO ] [G889820260131102] [T889820260131002] c.f.l.i.DepositFeignClient - [WangWu] 开始调用存款服务进行入账: AcctNo[62220002], Amount[10000.00]
+2026-01-31 10:00:00.500 [INFO ] [G889820260131103] [T889820260131003] c.f.l.c.LoanController - 收到放款申请请求: 用户[ZhaoLiu], 金额[999999.00], 申请单号[APP20260131003]
+2026-01-31 10:00:00.550 [WARN ] [G889820260131103] [T889820260131003] c.f.l.s.RiskClient - [ZhaoLiu] 风控准入校验拒绝: Score[40], Level[HIGH_RISK], Reason[多头借贷]
+2026-01-31 10:00:00.560 [INFO ] [G889820260131103] [T889820260131003] c.f.l.s.LoanCoreService - [ZhaoLiu] 申请被拒，流程结束
+2026-01-31 10:00:00.690 [INFO ] [G889820260131101] [T889820260131001] c.f.l.i.DepositFeignClient - [ZhangSan] 存款服务调用成功: ResponseCode[0000]
+2026-01-31 10:00:00.700 [INFO ] [G889820260131102] [T889820260131002] c.f.l.i.DepositFeignClient - [WangWu] 存款服务调用成功: ResponseCode[0000]
+2026-01-31 10:00:00.710 [INFO ] [G889820260131101] [T889820260131001] c.f.l.s.LoanCoreService - [ZhangSan] 流程结束: 借据状态更新为[DISBURSED], 交易耗时[705ms]
+2026-01-31 10:00:00.720 [INFO ] [G889820260131102] [T889820260131002] c.f.l.s.LoanCoreService - [WangWu] 流程结束: 借据状态更新为[DISBURSED], 交易耗时[710ms]
+2026-01-31 10:01:00.001 [INFO ] [G889820260131800] [T889820260131800] c.f.l.j.OverdueScanner - 开始执行[逾期扫描]定时任务...
+2026-01-31 10:01:00.050 [INFO ] [G889820260131800] [T889820260131800] c.f.l.j.OverdueScanner - 扫描到逾期借据: Count[0], Cost[49ms]
+2026-01-31 10:02:15.001 [INFO ] [G889820260131104] [T889820260131004] c.f.l.c.LoanController - 收到放款申请请求: 用户[SunQi], 金额[3000.00], 申请单号[APP20260131004]
+2026-01-31 10:02:15.080 [INFO ] [G889820260131104] [T889820260131004] c.f.l.s.RiskClient - [SunQi] 风控准入校验通过
+2026-01-31 10:02:15.120 [INFO ] [G889820260131104] [T889820260131004] c.f.l.s.LoanCoreService - [SunQi] 借据创建成功: 借据号[DB2026013100095]
+2026-01-31 10:02:15.130 [INFO ] [G889820260131104] [T889820260131004] c.f.l.i.DepositFeignClient - [SunQi] 开始调用存款服务进行入账
+2026-01-31 10:02:15.450 [INFO ] [G889820260131104] [T889820260131004] c.f.l.i.DepositFeignClient - [SunQi] 存款服务调用成功
+2026-01-31 10:02:15.460 [INFO ] [G889820260131104] [T889820260131004] c.f.l.s.LoanCoreService - [SunQi] 流程结束
+2026-01-31 10:03:00.000 [INFO ] [G889820260131000] [T889820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=10, active=1, idle=9, waiting=0)
+2026-01-31 10:04:00.000 [INFO ] [G889820260131000] [T889820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+2026-01-31 10:05:30.100 [INFO ] [G889820260131555] [T889820260131099] c.f.l.c.LoanController - 收到放款申请请求: 用户[LiSi], 金额[2000000.00], 申请单号[APP20260131055]
+2026-01-31 10:05:30.150 [INFO ] [G889820260131555] [T889820260131099] c.f.l.s.LoanCoreService - 大额贷款预警: 金额超过阈值, 进入人工复核流程(模拟自动通过)
+2026-01-31 10:05:30.200 [INFO ] [G889820260131555] [T889820260131099] c.f.l.i.DepositFeignClient - 开始调用存款服务进行入账: AcctNo[62220099], Amount[2000000.00]
+2026-01-31 10:05:30.650 [ERROR] [G889820260131555] [T889820260131099] c.f.l.i.DepositFeignClient - 远程调用失败，原因：下游服务返回异常. Status[500], Body[{"code":"500","msg":"账户状态异常"}]
+2026-01-31 10:05:30.655 [ERROR] [G889820260131555] [T889820260131099] c.f.l.s.LoanCoreService - 放款交易异常，执行事务回滚。借据号[DB2026013100099]
+2026-01-31 10:05:30.660 [INFO ] [G889820260131555] [T889820260131099] c.f.l.s.LoanCoreService - 借据状态已更新为[FAILED], 触发告警通知
+2026-01-31 10:05:31.000 [INFO ] [G889820260131105] [T889820260131005] c.f.l.c.LoanController - 收到放款申请请求: 用户[ZhouBa], 金额[5000.00], 申请单号[APP20260131005]
+2026-01-31 10:05:31.050 [INFO ] [G889820260131105] [T889820260131005] c.f.l.s.RiskClient - [ZhouBa] 风控准入校验通过
+2026-01-31 10:05:31.100 [INFO ] [G889820260131105] [T889820260131005] c.f.l.s.LoanCoreService - [ZhouBa] 借据创建成功: 借据号[DB2026013100096]
+2026-01-31 10:05:31.110 [INFO ] [G889820260131105] [T889820260131005] c.f.l.i.DepositFeignClient - [ZhouBa] 开始调用存款服务进行入账
+2026-01-31 10:05:31.400 [INFO ] [G889820260131105] [T889820260131005] c.f.l.i.DepositFeignClient - [ZhouBa] 存款服务调用成功
+2026-01-31 10:05:31.410 [INFO ] [G889820260131105] [T889820260131005] c.f.l.s.LoanCoreService - [ZhouBa] 流程结束
+2026-01-31 10:15:00.000 [INFO ] [G889820260131000] [T889820260131000] c.z.h.HikariDataSource - HikariPool-1 - Pool stats (total=10, active=2, idle=8, waiting=0)
+2026-01-31 10:15:00.005 [INFO ] [G889820260131999] [T889820260131999] o.s.b.a.e.mvc.EndpointHandlerMapping - Mapped "{[/actuator/health],methods=[GET]}"
+2026-01-31 10:15:00.010 [INFO ] [G889820260131999] [T889820260131999] o.s.b.a.e.h.HealthEndpoint - Health check status: UP
 2026-01-31 10:30:00.005 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.controller.LoanApplyController - [入口] 收到贷款申请, 用户: ZhangSan, 金额: 50000.00
 2026-01-31 10:30:00.008 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.controller.LoanApplyController - [入口] 收到贷款申请, 用户: LiSi, 金额: 10000.00
 2026-01-31 10:30:00.012 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.check.BasicCheckService - [校验] 基础信息校验通过, 手机号实名认证一致

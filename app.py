@@ -25,7 +25,31 @@ st.markdown("""
     .stApp { background-color: #f3f7fa; font-family: 'Inter', sans-serif; }
 
     /* 隐藏默认 Header 和 侧边栏自带样式 */
-    header[data-testid="stHeader"] { display: none; }
+    /* 修改前：彻底隐藏（会导致无法打开侧边栏） */
+/* header[data-testid="stHeader"] { display: none; } */
+
+/* 修改后：只隐藏红线和背景，但保留按钮位置 */
+header[data-testid="stHeader"] {
+    background-color: transparent;
+}
+/* 隐藏那条彩色的装饰线 */
+header[data-testid="stHeader"] > .stAppHeader {
+    background-color: transparent;
+}
+/* 确保自带的 ☰ 按钮能显示在我们的自定义 Header 之上 */
+[data-testid="stSidebarNav"] {
+    z-index: 100002 !important; 
+}
+[data-testid="stSidebarCollapsedControl"] {
+    display: block !important;
+    z-index: 100002 !important;
+    color: #334155; /* 给箭头加个颜色，防止它是白色的看不见 */
+    background-color: white; /* 给个背景，防止透明 */
+    border-radius: 50%;
+    padding: 4px;
+    top: 20px; /* 调整位置，别被我们的 Custom Header 挡住 */
+    left: 20px;
+}
     section[data-testid="stSidebar"] { background-color: #ffffff; border-right: 1px solid #e2e8f0; }
 
     /* 自定义顶部导航栏 */
