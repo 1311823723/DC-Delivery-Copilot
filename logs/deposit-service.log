@@ -1,0 +1,22 @@
+2026-01-31 10:30:00.105 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.controller.TransferController - [入口] 收到内部转账请求, 来源: LOAN_CENTER
+2026-01-31 10:30:00.110 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.controller.TransferController - [入口] 收到内部转账请求, 来源: LOAN_CENTER
+2026-01-31 10:30:00.115 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.filter.AuthFilter - [鉴权] 验证签名: PASS, 客户端IP: 10.20.1.5
+2026-01-31 10:30:00.120 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.filter.AuthFilter - [鉴权] 验证签名: PASS, 客户端IP: 10.20.1.5
+2026-01-31 10:30:00.125 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.service.account.AcctCheckService - [校验] 查询账户 6222****8888 状态...
+2026-01-31 10:30:00.130 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.service.account.AcctCheckService - [校验] 查询账户 6222****9999 状态...
+2026-01-31 10:30:00.140 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.service.account.AcctCheckService - [校验] 账户状态正常, 户名: 张三
+2026-01-31 10:30:00.145 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.service.account.AcctCheckService - [校验] 账户状态正常, 户名: 李四
+2026-01-31 10:30:00.150 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.service.core.BalanceService - [动账] 准备加锁, Key: LOCK:ACCT:6222****8888
+2026-01-31 10:30:00.155 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.service.core.BalanceService - [动账] 准备加锁, Key: LOCK:ACCT:6222****9999
+2026-01-31 10:30:00.160 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.service.core.BalanceService - [动账] 获取锁成功, 当前余额: 200.00, 变动: +50000.00
+2026-01-31 10:30:00.165 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.service.core.BalanceService - [动账] 获取锁成功, 当前余额: 50.00, 变动: +10000.00
+2026-01-31 10:30:00.180 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.dao.JournalDao - [DB] 插入流水表 T_JOURNAL (TraceId: G8898...001)
+2026-01-31 10:30:00.185 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.dao.JournalDao - [DB] 插入流水表 T_JOURNAL (TraceId: G8898...002)
+2026-01-31 10:30:00.200 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.dao.BalanceDao - [DB] 更新余额表 T_BALANCE SET amt = 50200.00
+2026-01-31 10:30:00.205 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.dao.BalanceDao - [DB] 更新余额表 T_BALANCE SET amt = 10050.00
+2026-01-31 10:30:00.220 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.service.core.BalanceService - [动账] 释放锁 Key: LOCK:ACCT:6222****8888
+2026-01-31 10:30:00.225 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.service.core.BalanceService - [动账] 释放锁 Key: LOCK:ACCT:6222****9999
+2026-01-31 10:30:00.250 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.integration.MsgProducer - [MQ] 发送账户变动消息至 Kafka Topic: ACCT_CHANGE
+2026-01-31 10:30:00.255 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.integration.MsgProducer - [MQ] 发送账户变动消息至 Kafka Topic: ACCT_CHANGE
+2026-01-31 10:30:00.510 [INFO ] [G889820260131001] [T886820260131881] c.b.deposit.controller.TransferController - [结束] 入账处理成功, 响应给上游
+2026-01-31 10:30:00.520 [INFO ] [G889820260131002] [T886820260131882] c.b.deposit.controller.TransferController - [结束] 入账处理成功, 响应给上游

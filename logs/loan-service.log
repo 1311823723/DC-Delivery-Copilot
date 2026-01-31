@@ -1,0 +1,35 @@
+2026-01-31 10:30:00.005 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.controller.LoanApplyController - [入口] 收到贷款申请, 用户: ZhangSan, 金额: 50000.00
+2026-01-31 10:30:00.008 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.controller.LoanApplyController - [入口] 收到贷款申请, 用户: LiSi, 金额: 10000.00
+2026-01-31 10:30:00.012 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.check.BasicCheckService - [校验] 基础信息校验通过, 手机号实名认证一致
+2026-01-31 10:30:00.015 [INFO ] [G889820260131003] [T889820260131103] c.b.loan.controller.LoanApplyController - [入口] 收到贷款申请, 用户: WangWu, 金额: 2000000.00
+2026-01-31 10:30:00.020 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.check.BasicCheckService - [校验] 基础信息校验通过, 客户状态正常
+2026-01-31 10:30:00.025 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.risk.RiskEngineService - [风控] 调用风控模型 V3.0, 特征向量生成中...
+2026-01-31 10:30:00.030 [INFO ] [G889820260131003] [T889820260131103] c.b.loan.service.check.BasicCheckService - [校验] 基础信息校验通过
+2026-01-31 10:30:00.035 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.risk.RiskEngineService - [风控] 调用风控模型 V3.0
+2026-01-31 10:30:00.045 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.risk.RiskEngineService - [风控] 评分结果: 780, 风险等级: LOW, 建议通过
+2026-01-31 10:30:00.048 [INFO ] [G889820260131003] [T889820260131103] c.b.loan.service.risk.RiskEngineService - [风控] 检测到大额敏感交易, 启动强风控策略
+2026-01-31 10:30:00.050 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.quota.QuotaService - [额度] 尝试锁定额度 50000.00
+2026-01-31 10:30:00.055 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.risk.RiskEngineService - [风控] 评分结果: 690, 风险等级: MEDIUM, 建议通过
+2026-01-31 10:30:00.060 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.dao.QuotaMapper - [DB] SQL: UPDATE t_user_quota SET used = used + ? WHERE uid = ? (Params: 50000, U_ZS)
+2026-01-31 10:30:00.065 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.quota.QuotaService - [额度] 尝试锁定额度 10000.00
+2026-01-31 10:30:00.070 [ERROR] [G889820260131003] [T889820260131103] c.b.loan.service.risk.RiskEngineService - [异常] 触发风控熔断规则! 规则ID: RULE_HIGH_AMT_09
+com.bank.loan.exception.RiskException: 申请金额超限，触发自动拒绝
+    at com.bank.loan.service.risk.RiskEngineService.checkAmount(RiskEngineService.java:158)
+    at com.bank.loan.service.risk.RiskEngineService.evaluate(RiskEngineService.java:45)
+    at com.bank.loan.controller.LoanApplyController.apply(LoanApplyController.java:88)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.lang.Thread.run(Thread.java:748)
+2026-01-31 10:30:00.075 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.quota.QuotaService - [额度] 锁定成功
+2026-01-31 10:30:00.078 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.quota.QuotaService - [额度] 锁定成功
+2026-01-31 10:30:00.080 [WARN ] [G889820260131003] [T889820260131103] c.b.loan.controller.LoanApplyController - [结束] 贷款申请被拒绝, 原因: 申请金额超限，触发自动拒绝
+2026-01-31 10:30:00.085 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.disburse.DisburseService - [放款] 生成借据号: IOU-20260131-001
+2026-01-31 10:30:00.090 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.disburse.DisburseService - [放款] 生成借据号: IOU-20260131-002
+2026-01-31 10:30:00.095 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.remote.DepositFeignClient - [RPC] 请求存款中心入账...
+2026-01-31 10:30:00.100 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.remote.DepositFeignClient - [RPC] 请求存款中心入账...
+2026-01-31 10:30:00.520 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.remote.DepositFeignClient - [RPC] 存款中心响应: SUCCESS, 耗时: 425ms
+2026-01-31 10:30:00.530 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.remote.DepositFeignClient - [RPC] 存款中心响应: SUCCESS, 耗时: 430ms
+2026-01-31 10:30:00.535 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.service.notify.SmsService - [通知] 发送放款成功短信至 138****0001
+2026-01-31 10:30:00.540 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.service.notify.SmsService - [通知] 发送放款成功短信至 139****0002
+2026-01-31 10:30:00.545 [INFO ] [G889820260131001] [T889820260131101] c.b.loan.controller.LoanApplyController - [结束] 交易完成, 耗时: 540ms
+2026-01-31 10:30:00.550 [INFO ] [G889820260131002] [T889820260131102] c.b.loan.controller.LoanApplyController - [结束] 交易完成, 耗时: 542ms
